@@ -1,0 +1,58 @@
+# conda env create -f="/Users/m_lauber/Dropbox/knime-workspace/_hub/LLM_Space/script/py3_knime_llama.yml"
+# conda env create -f="C:\\Users\\x1234567\\knime-workspace\\hub\\kn_example_python_graphic_bokeh_json\\data\\py3_knime_llama.yml"
+
+# https://docs.gpt4all.io/gpt4all_python.html
+
+# conda env remove --name py3_knime_llama
+
+# conda activate py3_knime_llama
+# conda update -n py3_knime_llama --all
+
+# conda env update --name py3_knime_llama --file "/Users/m_lauber/Dropbox/knime-workspace/_hub/LLM_Space/script/py3_knime_llama.yml" --prune
+# conda env update --name py3_knime_llama --file "C:\\Users\\x1234567\\knime-workspace\\hub\\kn_example_python_graphic_bokeh_json\\data\\py3_knime_llama.yml" --prune
+
+# conda env update --name py3_knime_llama --file "/Users/m_lauber/Dropbox/knime-workspace/_hub/LLM_Space/script/py3_knime_llama.yml"
+# conda env update --name py3_knime_llama --file "C:\\Users\\x1234567\\knime-workspace\\hub\\kn_example_python_graphic_bokeh_json\\data\\py3_knime_llama.yml"
+# conda update -n base -c conda-forge conda
+
+# KNIME official Python integration guide
+# https://docs.knime.com/latest/python_installation_guide/index.html#_introduction
+
+# KNIME and Python - Setting up and managing Conda environments
+# https://medium.com/low-code-for-advanced-data-science/knime-and-python-setting-up-and-managing-conda-environments-2ac217792539
+
+# file: py3_knime_llama.yml with some modifications
+# THX Carsten Haubold (https://hub.knime.com/carstenhaubold) for hints
+name: py3_knime_llama       # Name of the created environment
+channels:                # Repositories to search for packages
+- conda-forge
+# https://anaconda.org/knime
+- knime                  # conda search knime-python-base -c knime --info # to see what is in the package
+dependencies:            # List of packages that should be installed
+- python                 #=3.10            # Python
+- knime-python-base<=4.7.0 # dependencies of KNIME - Python integration
+# - knime-python-scripting # everything you need to also build Python packages for KNIME
+- cairo                  # SVG support
+- pillow                 # Image inputs/outputs
+- matplotlib             # Plotting
+- IPython                # Notebook support
+- nbformat               # Notebook support
+- scipy                  # Notebook support
+- jpype1                 # A Python to Java bridge.
+# Jupyter Notebook support
+- jupyter                # Jupyter Notebook
+- pypdf
+# ---- additional packages LLM
+- transformers
+# - openai    # 
+# - streamlit # A faster way to build and share data apps
+- pip
+- pip:
+  - langchain # LangChain is a framework for developing applications powered by large language models (LLMs)
+  - langchain-community
+  - chromadb
+  - unstructured
+  - sentence-transformers
+  # - torch
+  # - huggingface-hub
+  #- vtreat
