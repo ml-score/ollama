@@ -1,0 +1,62 @@
+
+03/22 08:52:51 INFO   :..........rpapi_Reg_UnregFlow: ReadBuffer:  Entering
+ 
+03/22 08:52:52 INFO   :..........rpapi_Reg_UnregFlow: ReadBuffer:  Exiting
+ 
+03/22 08:52:52 INFO   :..........rpapi_Reg_UnregFlow: RSVPPutActionName:  Result = 0
+ 
+03/22 08:52:52 INFO   :..........rpapi_Reg_UnregFlow: RSVPPutActionName:  Exiting
+ 
+03/22 08:52:52 INFO   :..........rpapi_Reg_UnregFlow: flow[sess=9.67.116.99:1047:6, 
+source=9.67.116.98:8000] registered with CLCat2
+03/22 08:52:52 EVENT  :..........qosmgr_response: RESVRESP from qosmgr, reason=0, qoshandle=8b671d0
+03/22 08:52:52 INFO   :..........qosmgr_response: src-9.67.116.98:8000 dst-9.67.116.99:1047 proto-6
+03/22 08:52:52 TRACE  :...........traffic_reader: tc response msg=1, status=1
+03/22 08:52:52 INFO   :...........traffic_reader: Reservation req successful[session=9.67.116.99:1047:6,
+source=9.67.116.98:8000, qoshd=8b671d0]
+ 20 
+03/22 08:52:52 TRACE  :........api_action_sender: constructing a RESV
+03/22 08:52:52 TRACE  :........flow_timer_stop: stopped T1
+03/22 08:52:52 TRACE  :........flow_timer_stop: Stop T4
+03/22 08:52:52 TRACE  :........flow_timer_start: started T1
+03/22 08:52:52 TRACE  :........flow_timer_start: Start T4
+ 21 
+03/22 08:52:52 TRACE  :.......rsvp_flow_stateMachine: entering state RESVED
+ 22 
+03/22 08:53:07 EVENT  :..mailslot_sitter: process received signal SIGALRM
+03/22 08:53:07 TRACE  :.....event_timerT1_expire: T1 expired
+03/22 08:53:07 INFO   :......router_forward_getOI: Ioctl to query route entry successful
+03/22 08:53:07 TRACE  :......router_forward_getOI:         source address:   9.67.116.98
+03/22 08:53:07 TRACE  :......router_forward_getOI:         out inf:   9.67.116.98
+03/22 08:53:07 TRACE  :......router_forward_getOI:         gateway:   0.0.0.0
+03/22 08:53:07 TRACE  :......router_forward_getOI:         route handle:   7f5251c8
+03/22 08:53:07 INFO   :......rsvp_flow_stateMachine: state RESVED, event T1OUT
+03/22 08:53:07 TRACE  :.......rsvp_action_nHop: constructing a PATH
+03/22 08:53:07 TRACE  :.......flow_timer_start: started T1
+03/22 08:53:07 TRACE  :......rsvp_flow_stateMachine: reentering state RESVED
+03/22 08:53:07 TRACE  :.......mailslot_send: sending to (9.67.116.99:0)
+ 23 
+03/22 08:53:22 TRACE  :.....rsvp_event: received event from RAW-IP on interface 9.67.116.98
+03/22 08:53:22 TRACE  :......rsvp_explode_packet: v=1,flg=0,type=2,cksm=54875,ttl=255,rsv=0,len=84
+03/22 08:53:22 TRACE  :.......rsvp_parse_objects: STYLE is WF
+03/22 08:53:22 INFO   :.......rsvp_parse_objects: obj RSVP_HOP hop=9.67.116.99, lih=0
+03/22 08:53:22 TRACE  :......rsvp_event_mapSession: Session=9.67.116.99:1047:6 exists
+03/22 08:53:22 INFO   :.......rsvp_flow_stateMachine: state RESVED, event RESV
+03/22 08:53:22 TRACE  :........flow_timer_stop: Stop T4
+03/22 08:53:22 TRACE  :........flow_timer_start: Start T4
+03/22 08:53:22 TRACE  :.......rsvp_flow_stateMachine: reentering state RESVED
+03/22 08:53:22 EVENT  :..mailslot_sitter: process received signal SIGALRM
+03/22 08:53:22 TRACE  :.....event_timerT1_expire: T1 expired
+03/22 08:53:22 INFO   :......router_forward_getOI: Ioctl to query route entry successful
+03/22 08:53:22 TRACE  :......router_forward_getOI:         source address:   9.67.116.98
+03/22 08:53:22 TRACE  :......router_forward_getOI:         out inf:   9.67.116.98
+03/22 08:53:22 TRACE  :......router_forward_getOI:         gateway:   0.0.0.0
+03/22 08:53:22 TRACE  :......router_forward_getOI:         route handle:   7f5251c8
+03/22 08:53:22 INFO   :......rsvp_flow_stateMachine: state RESVED, event T1OUT
+03/22 08:53:22 TRACE  :.......rsvp_action_nHop: constructing a PATH
+03/22 08:53:22 TRACE  :.......flow_timer_start: started T1
+03/22 08:53:22 TRACE  :......rsvp_flow_stateMachine: reentering state RESVED
+03/22 08:53:22 TRACE  :.......mailslot_send: sending to (9.67.116.99:0)
+03/22 08:53:38 EVENT  :..mailslot_sitter: process received signal SIGALRM
+03/22 08:53:38 TRACE  :.....event_timerT1_expire: T1 expired
+03/22 08:53:38 INFO   :......router_forward_getOI: Ioctl to query route entry successful

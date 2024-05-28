@@ -1,0 +1,63 @@
+
+03/22 08:52:50 INFO   :.......init_policyAPI: RegisterWithPolicyAPI:  Writing to socket = 22
+ 
+03/22 08:52:50 INFO   :.......init_policyAPI: ReadBuffer:  Entering
+ 
+03/22 08:52:51 INFO   :.......init_policyAPI: ReadBuffer:  Exiting
+ 
+03/22 08:52:51 INFO   :.......init_policyAPI: RegisterWithPolicyAPI:  Exiting
+03/22 08:52:51 INFO   :.......init_policyAPI: Policy API initialized
+03/22 08:52:51 INFO   :......rpapi_getPolicyData: RSVPFindActionName:  Entering
+ 
+03/22 08:52:51 INFO   :......rpapi_getPolicyData: ReadBuffer:  Entering
+ 
+03/22 08:52:51 INFO   :......rpapi_getPolicyData: ReadBuffer:  Exiting
+ 
+03/22 08:52:51 INFO   :......rpapi_getPolicyData: RSVPFindActionName:  Result = 0
+ 
+03/22 08:52:51 INFO   :......rpapi_getPolicyData: RSVPFindActionName:  Exiting
+ 
+ 14 
+03/22 08:52:51 INFO   :......rpapi_getPolicyData: found action name CLCat2 for 
+flow[sess=9.67.116.99:1047:6,source=9.67.116.98:8000]
+03/22 08:52:51 INFO   :......rpapi_getPolicyData: RSVPFindServiceDetailsOnActName:  Entering
+ 
+03/22 08:52:51 INFO   :......rpapi_getPolicyData: ReadBuffer:  Entering
+ 
+03/22 08:52:51 INFO   :......rpapi_getPolicyData: ReadBuffer:  Exiting
+ 
+03/22 08:52:51 INFO   :......rpapi_getPolicyData: RSVPFindServiceDetailsOnActName:  Result = 0
+ 
+03/22 08:52:51 INFO   :......rpapi_getPolicyData: RSVPFindServiceDetailsOnActName:  Exiting
+ 
+03/22 08:52:51 INFO   :.....api_reader: appl chose service type 1
+03/22 08:52:51 INFO   :......rpapi_getSpecData: RSVPGetTSpec:  Entering
+ 
+03/22 08:52:51 INFO   :......rpapi_getSpecData: RSVPGetTSpec:  Result = 0
+ 
+03/22 08:52:51 INFO   :......rpapi_getSpecData: RSVPGetTSpec:  Exiting
+ 
+03/22 08:52:51 TRACE  :.....api_reader: new service=1, old service=0
+03/22 08:52:51 INFO   :.......rsvp_flow_stateMachine: state SESSIONED, event PATHDELTA
+ 15 
+03/22 08:52:51 TRACE  :........rsvp_action_nHop: constructing a PATH
+03/22 08:52:51 TRACE  :........flow_timer_start: started T1
+ 16 
+03/22 08:52:51 TRACE  :.......rsvp_flow_stateMachine: entering state PATHED
+03/22 08:52:51 TRACE  :........mailslot_send: sending to (9.67.116.99:0)
+03/22 08:52:51 TRACE  :........mailslot_send: sending to (9.67.116.99:1698)
+ 17 
+03/22 08:52:51 TRACE  :.....rsvp_event: received event from RAW-IP on interface 9.67.116.98
+03/22 08:52:51 TRACE  :......rsvp_explode_packet: v=1,flg=0,type=2,cksm=54875,ttl=255,rsv=0,len=84
+03/22 08:52:51 TRACE  :.......rsvp_parse_objects: STYLE is WF
+03/22 08:52:51 INFO   :.......rsvp_parse_objects: obj RSVP_HOP hop=9.67.116.99, lih=0
+03/22 08:52:51 TRACE  :......rsvp_event_mapSession: Session=9.67.116.99:1047:6 exists
+03/22 08:52:51 INFO   :.......rsvp_flow_stateMachine: state PATHED, event RESVDELTA
+ 18 
+03/22 08:52:51 TRACE  :........traffic_action_oif: is to install filter
+03/22 08:52:51 INFO   :.........qosmgr_request: src-9.67.116.98:8000 dst-9.67.116.99:1047 proto-6 
+rthdl-7f5251c8
+ 19 
+03/22 08:52:51 INFO   :.........qosmgr_request: [CL r=90000 b=6000 p=110000 m=1024 M=2048]
+03/22 08:52:51 INFO   :.........qosmgr_request: Ioctl to add reservation successful
+03/22 08:52:51 INFO   :..........rpapi_Reg_UnregFlow: RSVPPutActionName:  Entering
