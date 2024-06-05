@@ -3,7 +3,13 @@ Work with (local) Ollama and Llama large language models - but also other models
 
 ---
 
-### Chat with local Llama 3 Model via Ollama in KNIME Analytics Platform
+### Medium: Llama3 and KNIME - Build your local Vector Store from PDFs and other Documents 
+##### runs on KNIME 4 and Python 
+https://medium.com/p/237eda761c1c 
+
+
+
+### Medium: Chat with local Llama 3 Model via Ollama in KNIME Analytics Platform
 ##### Also extract Logs into structured JSON Files
 
 https://medium.com/p/aca61e4a690a
