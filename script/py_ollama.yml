@@ -1,0 +1,54 @@
+# conda env create -f="/Users/m_lauber/Dropbox/knime-workspace/_hub/LLM_Space/script/py_ollama.yml"
+# conda env create -f="C:\\Users\\a9699459\\knime-workspace\\LLM_Space\\script\\py_ollama.yml"
+
+# if you ant a fresh start
+# conda env remove --name py_ollama
+
+# conda activate py_ollama
+# conda update -n py_ollama --all
+
+# conda env update --name py_ollama --file "/Users/m_lauber/Dropbox/knime-workspace/_hub/LLM_Space/script/py_ollama.yml" --prune
+# conda env update --name py_ollama --file "C:\\Users\\a9699459\\knime-workspace\\LLM_Space\\script\\py_ollama.yml" --prune
+
+# conda env update --name py_ollama --file "/Users/m_lauber/Dropbox/knime-workspace/_hub/LLM_Space/script/py_ollama.yml"
+# conda env update --name py_ollama --file "C:\\Users\\a9699459\\knime-workspace\\LLM_Space\\script\\py_ollama.yml"
+
+# pip install --upgrade pip
+# conda update -n base -c conda-forge conda
+
+# KNIME official Python integration guide
+# https://docs.knime.com/latest/python_installation_guide/index.html#_introduction
+
+# KNIME and Python - Setting up and managing Conda environments
+# https://medium.com/low-code-for-advanced-data-science/knime-and-python-setting-up-and-managing-conda-environments-2ac217792539
+
+# file: py_ollama.yml with some modifications
+# THX Carsten Haubold (https://hub.knime.com/carstenhaubold) for hints
+name: py_ollama       # Name of the created environment
+channels:                # Repositories to search for packages
+- conda-forge
+# https://anaconda.org/knime
+# - knime                  # conda search knime-python-base -c knime --info # to see what is in the package
+dependencies:             # List of packages that should be installed
+  - python=3.10           # Python version
+  - pip                   # Enables the use of pip to install additional packages
+  - numpy                 # Numerical computing library
+  - pandas                # Data manipulation and analysis library
+  - PyPDF2                # PDF reading library
+  - streamlit             # Web app framework for data apps
+  - chromadb              # Chroma vectorstore for embedding storage
+  - spacy                 # NLP library
+  - faiss-cpu             # FAISS library for vector storage and retrieval (CPU version)
+  - pyyaml                # YAML parsing library
+  - requests              # HTTP library for making requests
+  - transformers          # Hugging Face Transformers library
+  - jupyter               # Jupyter Notebook support
+  - ipykernel             # IPython Kernel for Jupyter
+  - pip:
+      - langchain             # Langchain library for building language model chains
+      - langchain-community   # Community-driven extensions for Langchain
+      - langchain-huggingface # pip install -U langchain-huggingface
+      - sentence-transformers # Sentence Transformers for generating embeddings
+      - python-dotenv         # .env file support for managing environment variables
+      - ollama                # Ollama Embeddings for LLaMA models
+      - unstructured          # Unstructured document loader

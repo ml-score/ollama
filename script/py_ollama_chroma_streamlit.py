@@ -1,24 +1,38 @@
+# Ollama / Llama3
+# Work with (local) Ollama and Llama large language models
+# https://github.com/ml-score/ollama
+
 import streamlit as st  # Streamlit is used to create the web app interface
 from PyPDF2 import PdfReader  # PyPDF2 is used to read PDF files
 from langchain.text_splitter import RecursiveCharacterTextSplitter  # Splits text into manageable chunks
 
 # pip install -U langchain-community
-# from langchain.vectorstores import Chroma  # Vector store to store and retrieve text embeddings
-from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma  # Vector store to store and retrieve text embeddings using Chroma
 from langchain_community.document_loaders import TextLoader, CSVLoader  # Loaders for text and CSV documents
-from langchain_community.embeddings import OllamaEmbeddings # Creates embeddings for text using different models
+from langchain_community.embeddings import OllamaEmbeddings  # Creates embeddings for text using different models
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.llms import Ollama  # Large Language Model interface for Ollama
 
 from langchain.prompts import ChatPromptTemplate  # Creates templates for prompts to the LLM
 from langchain.chains import RetrievalQA  # Creates a QA chain using retrieval-based methods
 from langchain.schema import Document  # Document schema for text data
-
 import os  # OS module for environment configuration and file handling
 import tempfile  # Create temporary files
 import json  # JSON module for reading and writing JSON data
 from datetime import datetime  # Handles date and time operations
 from unstructured.partition.auto import partition  # Handles unstructured file partitions (not used directly here)
+from transformers import AutoModel, AutoTokenizer  # Used to download and save the model locally
+
+# Directory for local models
+local_model_dir = "../data/local_models/all-MiniLM-L6-v2"
+
+# Function to check if the model is downloaded
+def check_model_downloaded():
+    if not os.path.exists(local_model_dir):
+        raise FileNotFoundError(f"The model directory '{local_model_dir}' does not exist. Please run the py_ollama_download_model.py script to download the model.")
+
+# Call the function to ensure the model is downloaded
+check_model_downloaded()
 
 # Configure proxy settings if needed
 def configure_proxy(use_proxy):
@@ -60,8 +74,9 @@ def get_chunks(texts, chunk_size, chunk_overlap):
 
 # Store text chunks in a vector store
 def vector_store(text_chunks, embedding_model_name, vector_store_path):
-    if embedding_model_name == "sentence-transformers/all-MiniLM-L6-v2":
-        embeddings = HuggingFaceEmbeddings(model_name=embedding_model_name)
+    if embedding_model_name == "all-MiniLM-L6-v2":
+        model_kwargs = {'trust_remote_code': True}
+        embeddings = HuggingFaceEmbeddings(model_name=local_model_dir,  model_kwargs=model_kwargs)
     else:
         embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model=embedding_model_name)
 
@@ -71,8 +86,9 @@ def vector_store(text_chunks, embedding_model_name, vector_store_path):
 
 # Load the vector store
 def load_vector_store(embedding_model_name, vector_store_path):
-    if embedding_model_name == "sentence-transformers/all-MiniLM-L6-v2":
-        embeddings = HuggingFaceEmbeddings(model_name=embedding_model_name)
+    if embedding_model_name == "all-MiniLM-L6-v2":
+        model_kwargs = {'trust_remote_code': True}
+        embeddings = HuggingFaceEmbeddings(model_name=local_model_dir,  model_kwargs=model_kwargs)
     else:
         embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model=embedding_model_name)
     
@@ -96,10 +112,10 @@ def load_conversation(vector_store_path):
     return conversation
 
 # Get a conversational chain response from the LLM
-def get_conversational_chain(retriever, ques, llm_model):
+def get_conversational_chain(retriever, ques, llm_model, system_prompt):
     llm = Ollama(model=llm_model, verbose=True)
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are a helpful assistant. Answer the question as detailed as possible from the provided context, make sure to provide all the details. If the answer is not in the provided context, just say, "answer is not available in the context", don't provide the wrong answer"""),
+        ("system", system_prompt),
         ("human", "{input}")
     ])
     qa_chain = RetrievalQA.from_chain_type(
@@ -108,23 +124,23 @@ def get_conversational_chain(retriever, ques, llm_model):
         retriever=retriever,
         return_source_documents=False
     )
-    response = qa_chain({"query": ques})
+    response = qa_chain.invoke({"query": ques})
     return response
 
 # Handle user input and display the response
-def user_input(user_question, embedding_model_name, vector_store_path, num_docs, llm_model):
+def user_input(user_question, embedding_model_name, vector_store_path, num_docs, llm_model, system_prompt):
     vector_store = load_vector_store(embedding_model_name, vector_store_path)
     retriever = vector_store.as_retriever(search_kwargs={"k": num_docs})
-    response = get_conversational_chain(retriever, user_question, llm_model)
+    response = get_conversational_chain(retriever, user_question, llm_model, system_prompt)
     
     conversation = load_conversation(vector_store_path)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     if 'output' in response:
         result = response['output']['result'] if 'result' in response['output'] else response['output']
-        conversation.append({"question": user_question, "answer": result, "timestamp": timestamp})
+        conversation.append({"question": user_question, "answer": result, "timestamp": timestamp, "llm_model": llm_model})
         st.write("Reply: ", result)
     else:
-        conversation.append({"question": user_question, "answer": response, "timestamp": timestamp})
+        conversation.append({"question": user_question, "answer": response, "timestamp": timestamp, "llm_model": llm_model})
         st.write("Reply: ", response)
     
     save_conversation(conversation, vector_store_path)
@@ -133,21 +149,26 @@ def user_input(user_question, embedding_model_name, vector_store_path, num_docs,
     for entry in sorted(conversation, key=lambda x: x['timestamp'], reverse=True):
         st.write(f"**Q ({entry['timestamp']}):** {entry['question']}")
         st.write(f"**A:** {entry['answer']}")
+        st.write(f"**LLM Model:** {entry['llm_model']}")
 
 # Main function to run the Streamlit app
 def main():
     st.set_page_config(page_title="Ollama: Chat with your Files")
     st.header("Chat with Your Files using Llama3 or Mistral")
 
+    # ../data/ollama.png
     st.sidebar.markdown(
         """
         <div style="text-align: center;">
-            <img src="https://ollama.com/public/ollama.png" alt="Ollama Logo" style="width: 50px; height: auto;">
+            <img src="https://ollama.com/public/ollama.png" alt="Ollama Logo" style="width: 50px; height: auto;">            
             <p><b>Ollama with Chroma Vector Store</b></p>
         </div>
         """,
         unsafe_allow_html=True
     )
+
+    # Add system prompt input field
+    system_prompt = st.sidebar.text_area("System Prompt", value="You are a helpful assistant. Answer the question as detailed as possible from the provided context, make sure to provide all the details. If the answer is not in the provided context, just say, 'answer is not available in the context', don't provide the wrong answer")
 
     user_question = st.text_input("Ask a Question from the Files")
     use_proxy = st.sidebar.checkbox("Use Proxy", value=False)
@@ -155,7 +176,7 @@ def main():
 
     embedding_model_name = st.sidebar.selectbox(
         "Select Embedding Model",
-        ["sentence-transformers/all-MiniLM-L6-v2", "llama3:instruct", "mistral:instruct"]
+        ["all-MiniLM-L6-v2", "llama3:instruct", "mistral:instruct"]
     )
 
     llm_model = st.sidebar.selectbox(
@@ -175,7 +196,7 @@ def main():
     num_docs = st.sidebar.number_input("Number of Documents to Retrieve", min_value=1, max_value=10, value=3, step=1)
 
     if user_question:
-        user_input(user_question, embedding_model_name, vector_store_path, num_docs, llm_model)
+        user_input(user_question, embedding_model_name, vector_store_path, num_docs, llm_model, system_prompt)
 
     with st.sidebar:
         st.title("Documents:")
@@ -194,7 +215,7 @@ def main():
     st.markdown("<hr>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
-        st.write("composed by [M. Lauber](https://medium.com/@mlxl) and ChatGPT-4o")    
+        st.write("composed by [M. Lauber](https://medium.com/@mlxl) and ChatGPT-4o - [GitHub](https://github.com/ml-score/ollama)")
     with col2:
         st.write("inspired by [Paras Madan](https://medium.com/@parasmadan.in)")
 
