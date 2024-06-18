@@ -1,5 +1,5 @@
 # conda env create -f="/Users/m_lauber/Dropbox/knime-workspace/_hub/LLM_Space/script/py_ollama.yml"
-# conda env create -f="C:\\Users\\a9699459\\knime-workspace\\LLM_Space\\script\\py_ollama.yml"
+# conda env create -f="C:\\Users\\x123456\\knime-workspace\\LLM_Space\\script\\py_ollama.yml"
 
 # if you ant a fresh start
 # conda env remove --name py_ollama
@@ -8,10 +8,10 @@
 # conda update -n py_ollama --all
 
 # conda env update --name py_ollama --file "/Users/m_lauber/Dropbox/knime-workspace/_hub/LLM_Space/script/py_ollama.yml" --prune
-# conda env update --name py_ollama --file "C:\\Users\\a9699459\\knime-workspace\\LLM_Space\\script\\py_ollama.yml" --prune
+# conda env update --name py_ollama --file "C:\\Users\\x123456\\knime-workspace\\LLM_Space\\script\\py_ollama.yml" --prune
 
 # conda env update --name py_ollama --file "/Users/m_lauber/Dropbox/knime-workspace/_hub/LLM_Space/script/py_ollama.yml"
-# conda env update --name py_ollama --file "C:\\Users\\a9699459\\knime-workspace\\LLM_Space\\script\\py_ollama.yml"
+# conda env update --name py_ollama --file "C:\\Users\\x123456\\knime-workspace\\LLM_Space\\script\\py_ollama.yml"
 
 # pip install --upgrade pip
 # conda update -n base -c conda-forge conda
