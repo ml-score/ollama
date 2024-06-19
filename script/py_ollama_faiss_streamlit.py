@@ -27,7 +27,7 @@ local_model_dir = "../data/local_models/all-MiniLM-L6-v2"
 # Function to check if the model is downloaded
 def check_model_downloaded():
     if not os.path.exists(local_model_dir):
-        raise FileNotFoundError(f"The model directory '{local_model_dir}' does not exist. Please run the download_model.py script to download the model.")
+        raise FileNotFoundError(f"The model directory '{local_model_dir}' does not exist. Please run the py_ollama_download_model.py script to download the model.")
 
 # Call the function to ensure the model is downloaded
 check_model_downloaded()
