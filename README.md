@@ -11,16 +11,19 @@ https://github.com/ml-score/ollama/tree/main/script
 
 ---
 
-### Medium: Llama3 and KNIME - Build your local Vector Store from PDFs and other Documents 
+### Llama3 and KNIME - Build your local Vector Store from PDFs and other Documents 
 ##### runs on KNIME 4 and Python 
 https://medium.com/p/237eda761c1c 
 
-
-
-### Medium: Chat with local Llama 3 Model via Ollama in KNIME Analytics Platform
+### Chat with local Llama 3 Model via Ollama in KNIME Analytics Platform
 ##### Also extract Logs into structured JSON Files
-
 https://medium.com/p/aca61e4a690a
+
+### Creating a Local LLM Vector Store from PDFs with KNIME and GPT4All
+https://medium.com/p/311bf61dd20e
+
+### KNIME, AI Extension and local Large Language Models (LLM)
+https://medium.com/p/cef650fc142b
 
 ---
 
