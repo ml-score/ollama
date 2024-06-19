@@ -2,6 +2,14 @@
 Work with (local) Ollama and Llama large language models - but also other models supported by Ollama like Mistral or Phi (https://ollama.com/library)
 
 ---
+### A Streamlit App to convert your files into Vector Stores and chat with them with LLMs
+
+https://github.com/ml-score/ollama/tree/main/script
+
+![Overview Ollama Streamlit App](Ollama_Chat_Vector_Store.png "An Ollama Streamlit App")
+
+
+---
 
 ### Medium: Llama3 and KNIME - Build your local Vector Store from PDFs and other Documents 
 ##### runs on KNIME 4 and Python 
