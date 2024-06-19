@@ -2,6 +2,13 @@
 
 #### ... using FAISS or Chroma vector store
 
+You will have to download and install Ollama (https://ollama.com/) and make sure you have the models ready. You have to run once a command like:
+
+```
+ollama run mistral:instruct
+ollama pull llama3:instruct
+```
+
 
 * [py_ollama.yml](https://github.com/ml-score/ollama/blob/main/script/py_ollama.yml) - the configuration file for your [Python environment](https://medium.com/low-code-for-advanced-data-science/knime-and-python-setting-up-and-managing-conda-environments-2ac217792539)
 * [py_ollama_download_model.py](https://github.com/ml-score/ollama/blob/main/script/py_ollama_download_model.py) - dowload the encoder model once to your local environment
