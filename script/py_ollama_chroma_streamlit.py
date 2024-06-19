@@ -6,7 +6,6 @@ import streamlit as st  # Streamlit is used to create the web app interface
 from PyPDF2 import PdfReader  # PyPDF2 is used to read PDF files
 from langchain.text_splitter import RecursiveCharacterTextSplitter  # Splits text into manageable chunks
 
-# pip install -U langchain-community
 from langchain_community.vectorstores import Chroma  # Vector store to store and retrieve text embeddings using Chroma
 from langchain_community.document_loaders import TextLoader, CSVLoader  # Loaders for text and CSV documents
 from langchain_community.embeddings import OllamaEmbeddings  # Creates embeddings for text using different models
@@ -51,15 +50,21 @@ def read_data(files, loader_type):
         try:
             if loader_type == "PDF":
                 pdf_reader = PdfReader(tmp_file_path)
-                for page in pdf_reader.pages:
+                for page_num, page in enumerate(pdf_reader.pages):
                     text = page.extract_text()
-                    documents.append(Document(page_content=text))
+                    documents.append(Document(page_content=text, metadata={"source": file.name, "page_number": page_num + 1}))
             elif loader_type == "Text":
                 loader = TextLoader(tmp_file_path)
-                documents.extend(loader.load())
+                docs = loader.load()
+                for doc in docs:
+                    doc.metadata["source"] = file.name
+                documents.extend(docs)
             elif loader_type == "CSV":
                 loader = CSVLoader(tmp_file_path)
-                documents.extend(loader.load())
+                docs = loader.load()
+                for doc in docs:
+                    doc.metadata["source"] = file.name
+                documents.extend(docs)
         finally:
             os.remove(tmp_file_path)
     return documents
@@ -69,26 +74,27 @@ def get_chunks(texts, chunk_size, chunk_overlap):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     chunks = []
     for text in texts:
-        chunks.extend(text_splitter.split_text(text.page_content))
+        split_texts = text_splitter.split_text(text.page_content)
+        for split_text in split_texts:
+            chunks.append(Document(page_content=split_text, metadata=text.metadata))
     return chunks
 
 # Store text chunks in a vector store
 def vector_store(text_chunks, embedding_model_name, vector_store_path):
     if embedding_model_name == "all-MiniLM-L6-v2":
         model_kwargs = {'trust_remote_code': True}
-        embeddings = HuggingFaceEmbeddings(model_name=local_model_dir,  model_kwargs=model_kwargs)
+        embeddings = HuggingFaceEmbeddings(model_name=local_model_dir, model_kwargs=model_kwargs)
     else:
         embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model=embedding_model_name)
 
-    documents = [Document(page_content=chunk) for chunk in text_chunks]
-    vector_store = Chroma.from_documents(documents=documents, embedding=embeddings, persist_directory=vector_store_path)
+    vector_store = Chroma.from_documents(documents=text_chunks, embedding=embeddings, persist_directory=vector_store_path)
     vector_store.persist()
 
 # Load the vector store
 def load_vector_store(embedding_model_name, vector_store_path):
     if embedding_model_name == "all-MiniLM-L6-v2":
         model_kwargs = {'trust_remote_code': True}
-        embeddings = HuggingFaceEmbeddings(model_name=local_model_dir,  model_kwargs=model_kwargs)
+        embeddings = HuggingFaceEmbeddings(model_name=local_model_dir, model_kwargs=model_kwargs)
     else:
         embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model=embedding_model_name)
     
@@ -111,6 +117,12 @@ def load_conversation(vector_store_path):
         conversation = []
     return conversation
 
+# Convert Document object to a serializable format
+def document_to_dict(doc):
+    return {
+        "metadata": doc.metadata
+    }
+
 # Get a conversational chain response from the LLM
 def get_conversational_chain(retriever, ques, llm_model, system_prompt):
     llm = Ollama(model=llm_model, verbose=True)
@@ -122,7 +134,7 @@ def get_conversational_chain(retriever, ques, llm_model, system_prompt):
         llm=llm,
         chain_type="stuff",
         retriever=retriever,
-        return_source_documents=False
+        return_source_documents=True  # Return source documents
     )
     response = qa_chain.invoke({"query": ques})
     return response
@@ -135,10 +147,24 @@ def user_input(user_question, embedding_model_name, vector_store_path, num_docs,
     
     conversation = load_conversation(vector_store_path)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    if 'output' in response:
-        result = response['output']['result'] if 'result' in response['output'] else response['output']
-        conversation.append({"question": user_question, "answer": result, "timestamp": timestamp, "llm_model": llm_model})
+    if 'result' in response:
+        result = response['result']
+        source_documents = response['source_documents'] if 'source_documents' in response else []
+        conversation.append({
+            "question": user_question, 
+            "answer": result, 
+            "timestamp": timestamp, 
+            "llm_model": llm_model,
+            "source_documents": [document_to_dict(doc) for doc in source_documents]
+        })
         st.write("Reply: ", result)
+        st.write(f"**LLM Model:** {llm_model}")
+        
+        st.write("### Source Documents")
+        for doc in source_documents:
+            metadata = doc.metadata
+            st.write(f"**Source:** {metadata.get('source', 'Unknown')}, **Page Number:** {metadata.get('page_number', 'N/A')}, **Additional Info:** {metadata}")
+        st.markdown("<hr style='border:1px solid gray;'>", unsafe_allow_html=True)
     else:
         conversation.append({"question": user_question, "answer": response, "timestamp": timestamp, "llm_model": llm_model})
         st.write("Reply: ", response)
@@ -150,17 +176,30 @@ def user_input(user_question, embedding_model_name, vector_store_path, num_docs,
         st.write(f"**Q ({entry['timestamp']}):** {entry['question']}")
         st.write(f"**A:** {entry['answer']}")
         st.write(f"**LLM Model:** {entry['llm_model']}")
+        if 'source_documents' in entry:
+            for doc in entry['source_documents']:
+                st.write(f"**Source:** {doc['metadata'].get('source', 'Unknown')}, **Page Number:** {doc['metadata'].get('page_number', 'N/A')}, **Additional Info:** {doc['metadata']}")  # Display source filename, page number, and additional metadata
+        st.markdown("<hr style='border:1px solid gray;'>", unsafe_allow_html=True)
 
 # Main function to run the Streamlit app
 def main():
     st.set_page_config(page_title="Ollama: Chat with your Files")
     st.header("Chat with Your Files using Llama3 or Mistral")
 
-    # ../data/ollama.png
+    # Add GitHub link below the header
+    st.markdown(
+        """
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="https://github.com/ml-score/ollama" target="_blank">Visit GitHub Repository</a> and <a href="https://medium.com/@mlxl" target="_blank">Medium Blog</a>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     st.sidebar.markdown(
         """
         <div style="text-align: center;">
-            <img src="https://ollama.com/public/ollama.png" alt="Ollama Logo" style="width: 50px; height: auto;">            
+            <img src="https://ollama.com/public/ollama.png" alt="Ollama Logo" style="width: 50px; height: auto;">
             <p><b>Ollama with Chroma Vector Store</b></p>
         </div>
         """,
@@ -185,6 +224,7 @@ def main():
     )
 
     vector_store_path = st.sidebar.text_input("Vector Store Path (will reload if there)", "../data/vectorstore/my_store")
+
     data_type = st.sidebar.selectbox(
         "Select Data Type",
         ["PDF", "Text", "CSV"]
@@ -207,7 +247,7 @@ def main():
                 if chunk_text:
                     text_chunks = get_chunks(raw_documents, chunk_size, chunk_overlap)
                 else:
-                    text_chunks = [doc.page_content for doc in raw_documents]
+                    text_chunks = [Document(page_content=doc.page_content, metadata=doc.metadata) for doc in raw_documents]
                 vector_store(text_chunks, embedding_model_name, vector_store_path)
                 st.success("Done")
     
