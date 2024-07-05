@@ -11,10 +11,11 @@ ollama pull llama3:instruct
 
 
 * [py_ollama.yml](https://github.com/ml-score/ollama/blob/main/script/py_ollama.yml) - the configuration file for your [Python environment](https://medium.com/low-code-for-advanced-data-science/knime-and-python-setting-up-and-managing-conda-environments-2ac217792539)
-* [py_ollama_download_model.py](https://github.com/ml-score/ollama/blob/main/script/py_ollama_download_model.py) - dowload the encoder model once to your local environment (currently "all-MiniLM-L6-v2" - this might change)
+
+You should then pull an embedding model (https://ollama.com/blog/embedding-models):
 
 ```
-python py_ollama_download_model.py
+ollama pull mxbai-embed-large
 ```
   
 * [py_ollama_chroma_streamlit.py](https://github.com/ml-score/ollama/blob/main/script/py_ollama_chroma_streamlit.py) - the Streamlit application for the Ollama [Vector Store with Chroma](https://github.com/chroma-core/chroma)
