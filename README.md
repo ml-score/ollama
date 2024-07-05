@@ -2,6 +2,11 @@
 Work with (local) Ollama and Llama large language models - but also other models supported by Ollama like Mistral or Phi (https://ollama.com/library)
 
 ---
+
+### Ollama and Llama3 — A Streamlit App to convert your files into local Vector Stores and chat with them using the latest LLMs
+
+https://medium.com/p/c5340fcd6ad0
+
 ### A Streamlit App to convert your files into Vector Stores and chat with them with LLMs
 
 https://github.com/ml-score/ollama/tree/main/script
