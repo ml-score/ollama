@@ -1,7 +1,3 @@
-# Ollama / Llama3
-# Work with (local) Ollama and Llama large language models
-# https://github.com/ml-score/ollama
-
 import streamlit as st  # Streamlit is used to create the web app interface
 from PyPDF2 import PdfReader  # PyPDF2 is used to read PDF files
 from langchain.text_splitter import RecursiveCharacterTextSplitter  # Splits text into manageable chunks
@@ -9,7 +5,6 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter  # Splits tex
 from langchain_community.vectorstores import Chroma  # Vector store to store and retrieve text embeddings using Chroma
 from langchain_community.document_loaders import TextLoader, CSVLoader  # Loaders for text and CSV documents
 from langchain_community.embeddings import OllamaEmbeddings  # Creates embeddings for text using different models
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.llms import Ollama  # Large Language Model interface for Ollama
 
 from langchain.prompts import ChatPromptTemplate  # Creates templates for prompts to the LLM
@@ -22,18 +17,7 @@ from datetime import datetime  # Handles date and time operations
 from unstructured.partition.auto import partition  # Handles unstructured file partitions (not used directly here)
 from transformers import AutoModel, AutoTokenizer  # Used to download and save the model locally
 
-# Directory for local models
-local_model_dir = "../data/local_models/all-MiniLM-L6-v2"
-
-# Function to check if the model is downloaded
-def check_model_downloaded():
-    if not os.path.exists(local_model_dir):
-        raise FileNotFoundError(f"The model directory '{local_model_dir}' does not exist. Please run the py_ollama_download_model.py script to download the model.")
-
-# Call the function to ensure the model is downloaded
-check_model_downloaded()
-
-# Configure proxy settings if needed
+# Function to configure proxy settings if needed
 def configure_proxy(use_proxy):
     proxy = "http://proxy.my-company.com:8080" if use_proxy else ""
     os.environ['http_proxy'] = proxy
@@ -81,23 +65,13 @@ def get_chunks(texts, chunk_size, chunk_overlap):
 
 # Store text chunks in a vector store
 def vector_store(text_chunks, embedding_model_name, vector_store_path):
-    if embedding_model_name == "all-MiniLM-L6-v2":
-        model_kwargs = {'trust_remote_code': True}
-        embeddings = HuggingFaceEmbeddings(model_name=local_model_dir, model_kwargs=model_kwargs)
-    else:
-        embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model=embedding_model_name)
-
+    embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model=embedding_model_name)
     vector_store = Chroma.from_documents(documents=text_chunks, embedding=embeddings, persist_directory=vector_store_path)
     vector_store.persist()
 
 # Load the vector store
 def load_vector_store(embedding_model_name, vector_store_path):
-    if embedding_model_name == "all-MiniLM-L6-v2":
-        model_kwargs = {'trust_remote_code': True}
-        embeddings = HuggingFaceEmbeddings(model_name=local_model_dir, model_kwargs=model_kwargs)
-    else:
-        embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model=embedding_model_name)
-    
+    embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model=embedding_model_name)
     vector_store = Chroma(persist_directory=vector_store_path, embedding_function=embeddings)
     return vector_store
 
@@ -190,7 +164,7 @@ def main():
     st.markdown(
         """
         <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://github.com/ml-score/ollama" target="_blank">Visit GitHub Repository</a> and <a href="https://medium.com/@mlxl" target="_blank">Medium Blog</a>
+            <a href="https://github.com/ml-score/ollama" target="_blank">Visit GitHub Repository</a> and <a href="https://medium.com/p/c5340fcd6ad0" target="_blank">Medium Blog</a>
         </div>
         """,
         unsafe_allow_html=True
@@ -215,7 +189,7 @@ def main():
 
     embedding_model_name = st.sidebar.selectbox(
         "Select Embedding Model",
-        ["all-MiniLM-L6-v2", "llama3:instruct", "mistral:instruct"]
+        ["mxbai-embed-large", "llama3:instruct", "mistral:instruct"]
     )
 
     llm_model = st.sidebar.selectbox(
